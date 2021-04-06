@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "509336841469",
+    "project_id": "encrypted-chat-applicati-53b61",
+    "storage_bucket": "encrypted-chat-applicati-53b61.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:509336841469:android:c78a5255f1dcc96de0e294",
+        "android_client_info": {
+          "package_name": "com.soham.encryptedchatapplication"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "509336841469-akk72vgr884p80nsl6ng4rc9lr1qcfmf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAw_F3b0tH-D_juK7u5d-Un4HVXk10naiQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "509336841469-akk72vgr884p80nsl6ng4rc9lr1qcfmf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
