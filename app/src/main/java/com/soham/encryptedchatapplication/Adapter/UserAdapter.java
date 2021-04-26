@@ -1,12 +1,16 @@
 package com.soham.encryptedchatapplication.Adapter;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -22,6 +26,8 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
     private Context mContext;
     private List<User> mUsers;
+    String getmPassword;
+    String mPassword = "qwerty";
 
     public UserAdapter(Context mContext, List<User> mUsers) {
         this.mContext = mContext;
@@ -49,9 +55,36 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(mContext, MessageActivity.class);
-                intent.putExtra("userid",user.getId());
-                mContext.startActivity(intent);
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+                builder.setTitle("Enter Secret Key");
+                LayoutInflater inflater = LayoutInflater.from(mContext);
+                final View dialogView = inflater.inflate(R.layout.alert_dialog, null);
+                builder.setView(dialogView);
+
+                final EditText edt = (EditText) dialogView.findViewById(R.id.secretKey);
+                builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        getmPassword = edt.getText().toString();
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+                builder.create().show();
+
+                if(mPassword.equals(getmPassword)) {
+                    Intent intent = new Intent(mContext, MessageActivity.class);
+                    intent.putExtra("userid", user.getId());
+                    mContext.startActivity(intent);
+                }
+                else {
+                    Toast.makeText(v.getContext(), "Wrong Secret Key", Toast.LENGTH_LONG).show();
+                }
             }
         });
     }

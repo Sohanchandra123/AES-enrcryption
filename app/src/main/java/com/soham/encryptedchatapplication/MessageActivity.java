@@ -49,7 +49,7 @@ public class MessageActivity extends AppCompatActivity {
 
     CircleImageView profile_image;
     TextView username;
-    String mPass;
+    public static String mPass;
     String AES="AES";
     String encryptedMsg;
 
