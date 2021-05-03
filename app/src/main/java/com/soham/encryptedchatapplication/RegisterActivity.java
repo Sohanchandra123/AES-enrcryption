@@ -24,7 +24,7 @@ import java.util.HashMap;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    EditText username,email, password;
+    EditText username,email, password, secretkey;
     Button btn_register;
     FirebaseAuth auth;
     DatabaseReference reference;
@@ -42,6 +42,7 @@ public class RegisterActivity extends AppCompatActivity {
         username = findViewById(R.id.username);
         email = findViewById(R.id.email);
         password = findViewById(R.id.password);
+        secretkey = findViewById(R.id.secretkey);
         btn_register = findViewById(R.id.btn_register);
 
         auth = FirebaseAuth.getInstance();
@@ -51,20 +52,21 @@ public class RegisterActivity extends AppCompatActivity {
                 String txt_username = username.getText().toString();
                 String txt_email = email.getText().toString();
                 String txt_password = password.getText().toString();
+                String txt_secretkey = secretkey.getText().toString();
 
-                if (TextUtils.isEmpty(txt_username) || TextUtils.isEmpty(txt_email) || TextUtils.isEmpty(txt_password))
+                if (TextUtils.isEmpty(txt_username) || TextUtils.isEmpty(txt_email) || TextUtils.isEmpty(txt_password) || TextUtils.isEmpty(txt_secretkey))
                 {
                     Toast.makeText(RegisterActivity.this,"All fields are required", Toast.LENGTH_SHORT).show();
                 } else if(txt_password.length() < 6) {
                     Toast.makeText(RegisterActivity.this,"Password must be at least 6 characters",Toast.LENGTH_SHORT).show();
                 } else {
-                    register(txt_username,txt_email,txt_password);
+                    register(txt_username,txt_email,txt_password,txt_secretkey);
                 }
             }
         });
     }
 
-    private void register(String username,String email, String password)
+    private void register(String username,String email, String password, String secretkey)
     {
         auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
@@ -80,6 +82,7 @@ public class RegisterActivity extends AppCompatActivity {
                     hashMap.put("id",userid);
                     hashMap.put("username", username);
                     hashMap.put("imageURL","default");
+                    hashMap.put("secretkey",secretkey);
 
                     reference.setValue(hashMap).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override

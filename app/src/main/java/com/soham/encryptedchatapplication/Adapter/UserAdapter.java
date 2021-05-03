@@ -16,6 +16,14 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.soham.encryptedchatapplication.EncryptedMessageActivity;
 import com.soham.encryptedchatapplication.MessageActivity;
 import com.soham.encryptedchatapplication.Model.User;
 import com.soham.encryptedchatapplication.R;
@@ -27,7 +35,10 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
     private Context mContext;
     private List<User> mUsers;
     String getmPassword;
-    String mPassword = "qwerty";
+    String mPassword ;
+    DatabaseReference reference;
+    FirebaseUser fuser;
+
 
     public UserAdapter(Context mContext, List<User> mUsers) {
         this.mContext = mContext;
@@ -38,6 +49,20 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(mContext).inflate(R.layout.user_item,parent,false);
+        fuser = FirebaseAuth.getInstance().getCurrentUser();
+        reference = FirebaseDatabase.getInstance().getReference("Users").child(fuser.getUid());
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                User user = snapshot.getValue(User.class);
+                mPassword = snapshot.child("secretkey").getValue().toString();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
         return new UserAdapter.ViewHolder(view);
     }
 
@@ -77,14 +102,15 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                 });
                 builder.create().show();
 
+                Intent intent;
                 if(mPassword.equals(getmPassword)) {
-                    Intent intent = new Intent(mContext, MessageActivity.class);
-                    intent.putExtra("userid", user.getId());
-                    mContext.startActivity(intent);
+                    intent = new Intent(mContext, MessageActivity.class);
                 }
                 else {
-                    Toast.makeText(v.getContext(), "Wrong Secret Key", Toast.LENGTH_LONG).show();
+                    intent = new Intent(mContext, EncryptedMessageActivity.class);
                 }
+                intent.putExtra("userid", user.getId());
+                mContext.startActivity(intent);
             }
         });
     }

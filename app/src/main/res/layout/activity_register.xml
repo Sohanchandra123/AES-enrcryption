@@ -49,6 +49,14 @@
             android:layout_marginTop="10dp"
             android:hint="Password" />
 
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/secretkey"
+            android:inputType="textPassword"
+            android:layout_marginTop="10dp"
+            android:hint="Secret Key" />
+
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

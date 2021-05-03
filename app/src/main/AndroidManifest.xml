@@ -10,6 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EncryptedChatApplication">
         <activity android:name=".MessageActivity" />
+        <activity android:name=".EncryptedMessageActivity"/>
         <activity android:name=".MainActivity" />
         <activity
             android:name=".LoginActivity"

@@ -5,11 +5,13 @@ public class User {
     private String id;
     private String username;
     private String imageURL;
+    private String secretkey;
 
-    public User(String id, String username, String imageURL) {
+    public User(String id, String username, String imageURL, String secretkey) {
         this.id = id;
         this.username = username;
         this.imageURL = imageURL;
+        this.secretkey = secretkey;
     }
 
     public User() {
@@ -27,9 +29,7 @@ public class User {
         return username;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+    public void setUsername(String username) { this.username = username; }
 
     public String getImageURL() {
         return imageURL;
@@ -38,4 +38,10 @@ public class User {
     public void setImageURL(String imageURL) {
         this.imageURL = imageURL;
     }
+
+    public String getSecretkey() {
+        return secretkey;
+    }
+
+    public void setSecretkey(String secretkey) { this.secretkey = secretkey; }
 }

@@ -1,13 +1,6 @@
 package com.soham.encryptedchatapplication;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,12 +9,16 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
@@ -31,6 +28,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.soham.encryptedchatapplication.Adapter.EncryptedMessageAdaptor;
 import com.soham.encryptedchatapplication.Adapter.MessageAdapter;
 import com.soham.encryptedchatapplication.Model.Chat;
 import com.soham.encryptedchatapplication.Model.User;
@@ -45,7 +43,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class MessageActivity extends AppCompatActivity {
+public class EncryptedMessageActivity extends AppCompatActivity {
 
     CircleImageView profile_image;
     TextView username;
@@ -59,7 +57,7 @@ public class MessageActivity extends AppCompatActivity {
     ImageButton btn_send;
     EditText text_send;
 
-    MessageAdapter messageAdapter;
+    EncryptedMessageAdaptor encryptedMessageAdaptor;
     List<Chat> mChat;
 
     RecyclerView recyclerView;
@@ -111,7 +109,7 @@ public class MessageActivity extends AppCompatActivity {
                 if (user.getImageURL().equals("default")) {
                     profile_image.setImageResource(R.mipmap.ic_launcher);
                 } else {
-                    Glide.with(MessageActivity.this).load(user.getImageURL()).into(profile_image);
+                    Glide.with(EncryptedMessageActivity.this).load(user.getImageURL()).into(profile_image);
                 }
 
                 readMessages(fuser.getUid(), userid, user.getImageURL(), mPass);
@@ -127,15 +125,15 @@ public class MessageActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String msg = text_send.getText().toString();
-                /*try {
+                try {
                     encryptedMsg = encrypt(msg, mPass);
                 } catch (Exception e) {
                     e.printStackTrace();
-                }*/
+                }
                 if (!msg.equals((""))) {
-                    sendMessage(fuser.getUid(), userid, msg, mPass);
+                    sendMessage(fuser.getUid(), userid, encryptedMsg, mPass);
                 } else {
-                    Toast.makeText(MessageActivity.this, "You can't send empty message", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(EncryptedMessageActivity.this, "You can't send empty message", Toast.LENGTH_SHORT).show();
                 }
                 text_send.setText("");
             }
@@ -143,16 +141,17 @@ public class MessageActivity extends AppCompatActivity {
 
     }
 
-    private void sendMessage(String sender, String receiver, String message, String mPass) {
+    private void sendMessage(String sender, String receiver, String encryptedMsg, String mPass) {
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("sender", sender);
         hashMap.put("receiver", receiver);
-        hashMap.put("message", message);
+        hashMap.put("encryptedMsg", encryptedMsg);
         hashMap.put("privateKey",mPass);
+
         reference.child("Chats").push().setValue(hashMap);
     }
-
+    //&& (chat.getReceiver().equals(mPass)&&chat.getSender().equals(mPass))
     private void readMessages(String myid, String userid, String imageurl, String mPass) {
         mChat = new ArrayList<>();
         reference = FirebaseDatabase.getInstance().getReference("Chats");
@@ -164,14 +163,14 @@ public class MessageActivity extends AppCompatActivity {
                     Chat chat = snapshot1.getValue(Chat.class);
                     if ((chat.getReceiver().equals(myid) && chat.getSender().equals(userid)
                             || chat.getReceiver().equals(userid) && chat.getSender().equals(myid))
-                       ) {
+                    ) {
                         mChat.add(chat);
                     } else
                     {
-                        Toast.makeText(MessageActivity.this,"Wrong Secret Key",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(EncryptedMessageActivity.this,"Wrong Secret Key",Toast.LENGTH_SHORT).show();
                     }
-                    messageAdapter = new MessageAdapter(MessageActivity.this, mChat, imageurl, mPass);
-                    recyclerView.setAdapter(messageAdapter);
+                    encryptedMessageAdaptor = new EncryptedMessageAdaptor(EncryptedMessageActivity.this, mChat, imageurl, mPass);
+                    recyclerView.setAdapter(encryptedMessageAdaptor);
                 }
             }
 
@@ -188,7 +187,7 @@ public class MessageActivity extends AppCompatActivity {
         return true;
     }
 
-   /* @Override
+  /*  @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.privatekey:
@@ -217,7 +216,7 @@ public class MessageActivity extends AppCompatActivity {
         return false;
     }*/
 
- /*   private String encrypt(String Data, String inputPassword) throws Exception {
+    private String encrypt(String Data, String inputPassword) throws Exception {
         SecretKeySpec key = generateKey(inputPassword);
         Cipher cipher = Cipher.getInstance(AES);
         cipher.init(Cipher.ENCRYPT_MODE, key);
@@ -243,6 +242,6 @@ public class MessageActivity extends AppCompatActivity {
         byte[] key = digest.digest();
         SecretKeySpec secretKeySpec = new SecretKeySpec(key, "AES");
         return secretKeySpec;
-    }*/
+    }
 
 }
