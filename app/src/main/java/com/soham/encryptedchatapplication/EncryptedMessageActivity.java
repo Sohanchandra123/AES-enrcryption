@@ -165,9 +165,6 @@ public class EncryptedMessageActivity extends AppCompatActivity {
                             || chat.getReceiver().equals(userid) && chat.getSender().equals(myid))
                     ) {
                         mChat.add(chat);
-                    } else
-                    {
-                        Toast.makeText(EncryptedMessageActivity.this,"Wrong Secret Key",Toast.LENGTH_SHORT).show();
                     }
                     encryptedMessageAdaptor = new EncryptedMessageAdaptor(EncryptedMessageActivity.this, mChat, imageurl, mPass);
                     recyclerView.setAdapter(encryptedMessageAdaptor);

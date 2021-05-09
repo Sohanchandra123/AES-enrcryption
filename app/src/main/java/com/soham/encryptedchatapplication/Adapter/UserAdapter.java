@@ -34,8 +34,8 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
     private Context mContext;
     private List<User> mUsers;
-    String getmPassword;
-    String mPassword ;
+    public static String getmPassword;
+    public static String mPassword ;
     DatabaseReference reference;
     FirebaseUser fuser;
 

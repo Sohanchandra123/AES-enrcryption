@@ -33,17 +33,17 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     private Context mContext;
     private List<Chat> mChat;
     private String imageurl;
-    private String mPass;
+    //private String mPass;
     String AES="AES";
     String encryptedMsg;
 
     FirebaseUser fuser;
 
-    public MessageAdapter(Context mContext, List<Chat> mChat, String imageurl, String mPass) {
+    public MessageAdapter(Context mContext, List<Chat> mChat, String imageurl) {
         this.mContext = mContext;
         this.mChat = mChat;
         this.imageurl = imageurl;
-        this.mPass = mPass;
+        //this.mPass = mPass;
     }
 
     @NonNull

@@ -49,7 +49,7 @@ public class MessageActivity extends AppCompatActivity {
 
     CircleImageView profile_image;
     TextView username;
-    public static String mPass;
+    //public static String mPass;
     String AES="AES";
     String encryptedMsg;
 
@@ -107,14 +107,14 @@ public class MessageActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 User user = snapshot.getValue(User.class);
                 username.setText(user.getUsername());
-                mPass = snapshot.child("secretkey").getValue().toString();
+                //mPass = snapshot.child("secretkey").getValue().toString();
                 if (user.getImageURL().equals("default")) {
                     profile_image.setImageResource(R.mipmap.ic_launcher);
                 } else {
                     Glide.with(MessageActivity.this).load(user.getImageURL()).into(profile_image);
                 }
 
-                readMessages(fuser.getUid(), userid, user.getImageURL(), mPass);
+                readMessages(fuser.getUid(), userid, user.getImageURL());
             }
 
             @Override
@@ -133,7 +133,7 @@ public class MessageActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }*/
                 if (!msg.equals((""))) {
-                    sendMessage(fuser.getUid(), userid, msg, mPass);
+                    sendMessage(fuser.getUid(), userid, msg);
                 } else {
                     Toast.makeText(MessageActivity.this, "You can't send empty message", Toast.LENGTH_SHORT).show();
                 }
@@ -143,17 +143,17 @@ public class MessageActivity extends AppCompatActivity {
 
     }
 
-    private void sendMessage(String sender, String receiver, String message, String mPass) {
+    private void sendMessage(String sender, String receiver, String message) {
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("sender", sender);
         hashMap.put("receiver", receiver);
         hashMap.put("message", message);
-        hashMap.put("privateKey",mPass);
+        //hashMap.put("privateKey",mPass);
         reference.child("Chats").push().setValue(hashMap);
     }
 
-    private void readMessages(String myid, String userid, String imageurl, String mPass) {
+    private void readMessages(String myid, String userid, String imageurl) {
         mChat = new ArrayList<>();
         reference = FirebaseDatabase.getInstance().getReference("Chats");
         reference.addValueEventListener(new ValueEventListener() {
@@ -166,11 +166,10 @@ public class MessageActivity extends AppCompatActivity {
                             || chat.getReceiver().equals(userid) && chat.getSender().equals(myid))
                        ) {
                         mChat.add(chat);
-                    } else
-                    {
-                        Toast.makeText(MessageActivity.this,"Wrong Secret Key",Toast.LENGTH_SHORT).show();
                     }
-                    messageAdapter = new MessageAdapter(MessageActivity.this, mChat, imageurl, mPass);
+                    //Toast.makeText(MessageActivity.this,"Wrong Secret Key",Toast.LENGTH_SHORT).show();
+
+                    messageAdapter = new MessageAdapter(MessageActivity.this, mChat, imageurl);
                     recyclerView.setAdapter(messageAdapter);
                 }
             }
