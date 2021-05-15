@@ -131,7 +131,7 @@ public class EncryptedMessageActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
                 if (!msg.equals((""))) {
-                    sendMessage(fuser.getUid(), userid, encryptedMsg, mPass);
+                    sendMessage(fuser.getUid(), userid, encryptedMsg, mPass, userid);
                 } else {
                     Toast.makeText(EncryptedMessageActivity.this, "You can't send empty message", Toast.LENGTH_SHORT).show();
                 }
@@ -141,7 +141,7 @@ public class EncryptedMessageActivity extends AppCompatActivity {
 
     }
 
-    private void sendMessage(String sender, String receiver, String encryptedMsg, String mPass) {
+    private void sendMessage(String sender, String receiver, String encryptedMsg, String mPass, String userid) {
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("sender", sender);
@@ -150,6 +150,24 @@ public class EncryptedMessageActivity extends AppCompatActivity {
         hashMap.put("privateKey",mPass);
 
         reference.child("Chats").push().setValue(hashMap);
+
+        DatabaseReference chatRef = FirebaseDatabase.getInstance().getReference("Chatlist")
+                .child(fuser.getUid())
+                .child(userid);
+
+        chatRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot datasnapshot) {
+                if(!datasnapshot.exists()) {
+                    chatRef.child("id").setValue(userid);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
     }
     //&& (chat.getReceiver().equals(mPass)&&chat.getSender().equals(mPass))
     private void readMessages(String myid, String userid, String imageurl, String mPass) {
