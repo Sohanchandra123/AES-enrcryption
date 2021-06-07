@@ -10,7 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
+//import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.soham.encryptedchatapplication.Model.Chat;
@@ -57,7 +57,7 @@ public class EncryptedMessageAdaptor extends RecyclerView.Adapter<EncryptedMessa
         if (imageurl.equals("default")) {
             holder.profile_image.setImageResource(R.mipmap.ic_launcher);
         } else {
-            Glide.with(mContext).load(imageurl).into(holder.profile_image);
+           // Glide.with(mContext).load(imageurl).into(holder.profile_image);
         }
     }
 

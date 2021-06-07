@@ -10,7 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
+//import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -21,11 +21,11 @@ import com.google.firebase.database.ValueEventListener;
 import com.soham.encryptedchatapplication.Model.User;
 import com.soham.encryptedchatapplication.R;
 
-import de.hdodenhof.circleimageview.CircleImageView;
+//import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ProfileFragment extends Fragment {
 
-    CircleImageView image_profile;
+   // CircleImageView image_profile;
     TextView username;
    // TextView secretkey;
 
@@ -37,7 +37,7 @@ public class ProfileFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_profile,container,false);
 
-        image_profile = view.findViewById(R.id.profile_image);
+      //  image_profile = view.findViewById(R.id.profile_image);
         username = view.findViewById(R.id.username);
       //  secretkey = view.findViewById(R.id.secretkey1);
 
@@ -51,9 +51,9 @@ public class ProfileFragment extends Fragment {
                 username.setText(user.getUsername());
                // secretkey.setText(user.getSecretkey());
                 if(user.getImageURL().equals("default")) {
-                    image_profile.setImageResource(R.mipmap.ic_launcher);
+                    //image_profile.setImageResource(R.mipmap.ic_launcher);
                 } else {
-                    Glide.with(getContext()).load(user.getImageURL()).into(image_profile);
+                   // Glide.with(getContext()).load(user.getImageURL()).into(image_profile);
                 }
             }
 

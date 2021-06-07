@@ -20,7 +20,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.bumptech.glide.Glide;
+//import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -41,11 +41,11 @@ import java.util.List;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
-import de.hdodenhof.circleimageview.CircleImageView;
+//import de.hdodenhof.circleimageview.CircleImageView;
 
 public class EncryptedMessageActivity extends AppCompatActivity {
 
-    CircleImageView profile_image;
+   // CircleImageView profile_image;
     TextView username;
     public static String mPass;
     String AES="AES";
@@ -86,7 +86,7 @@ public class EncryptedMessageActivity extends AppCompatActivity {
         linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
 
-        profile_image = findViewById(R.id.profile_image);
+        //profile_image = findViewById(R.id.profile_image);
         username = findViewById(R.id.username);
         btn_send = findViewById(R.id.btn_send);
         text_send = findViewById(R.id.text_send);
@@ -107,9 +107,9 @@ public class EncryptedMessageActivity extends AppCompatActivity {
                 username.setText(user.getUsername());
                 mPass = snapshot.child("secretkey").getValue().toString();
                 if (user.getImageURL().equals("default")) {
-                    profile_image.setImageResource(R.mipmap.ic_launcher);
+                    //profile_image.setImageResource(R.mipmap.ic_launcher);
                 } else {
-                    Glide.with(EncryptedMessageActivity.this).load(user.getImageURL()).into(profile_image);
+                    //Glide.with(EncryptedMessageActivity.this).load(user.getImageURL()).into(profile_image);
                 }
 
                 readMessages(fuser.getUid(), userid, user.getImageURL(), mPass);

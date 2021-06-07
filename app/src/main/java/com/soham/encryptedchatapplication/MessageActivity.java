@@ -1,17 +1,23 @@
 package com.soham.encryptedchatapplication;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,7 +29,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
+//import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -31,36 +42,55 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.StorageTask;
+import com.google.firebase.storage.UploadTask;
 import com.soham.encryptedchatapplication.Adapter.MessageAdapter;
 import com.soham.encryptedchatapplication.Model.Chat;
 import com.soham.encryptedchatapplication.Model.User;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.security.MessageDigest;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 
-import de.hdodenhof.circleimageview.CircleImageView;
+//import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MessageActivity extends AppCompatActivity {
 
-    CircleImageView profile_image;
+    public static final int PICK_IMAGE = 1;
+
+    //CircleImageView profile_image;
     TextView username;
     //public static String mPass;
     String AES="AES";
     String encryptedMsg;
+    String checker = "",myUrl;
+    Uri imageUri;
+    StorageTask uploadTask;
+    ProgressDialog progressDialog;
 
     FirebaseUser fuser;
     DatabaseReference reference;
 
     ImageButton btn_send;
+    ImageButton btn_send_image;
     EditText text_send;
 
     MessageAdapter messageAdapter;
     List<Chat> mChat;
+
+    private String saveCurrentTime, saveCurrentDate;
 
     RecyclerView recyclerView;
 
@@ -90,10 +120,21 @@ public class MessageActivity extends AppCompatActivity {
         linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
 
-        profile_image = findViewById(R.id.profile_image);
+       // profile_image = findViewById(R.id.profile_image);
         username = findViewById(R.id.username);
         btn_send = findViewById(R.id.btn_send);
         text_send = findViewById(R.id.text_send);
+        btn_send_image = findViewById(R.id.btn_send_image);
+
+       // loadingBar = new ProgressDialog(this);
+
+        Calendar calendar = Calendar.getInstance();
+
+        SimpleDateFormat currentDate = new SimpleDateFormat("MMM dd, yyyy");
+        saveCurrentDate = currentDate.format(calendar.getTime());
+
+        SimpleDateFormat currentTime = new SimpleDateFormat("hh:mm a");
+        saveCurrentTime = currentTime.format(calendar.getTime());
 
         intent = getIntent();
         final String userid = intent.getStringExtra("userid");
@@ -111,9 +152,9 @@ public class MessageActivity extends AppCompatActivity {
                 username.setText(user.getUsername());
                 //mPass = snapshot.child("secretkey").getValue().toString();
                 if (user.getImageURL().equals("default")) {
-                    profile_image.setImageResource(R.mipmap.ic_launcher);
+                  //  profile_image.setImageResource(R.mipmap.ic_launcher);
                 } else {
-                    Glide.with(MessageActivity.this).load(user.getImageURL()).into(profile_image);
+                  //  Glide.with(MessageActivity.this).load(user.getImageURL()).into(profile_image);
                 }
 
                 readMessages(fuser.getUid(), userid, user.getImageURL());
@@ -143,9 +184,185 @@ public class MessageActivity extends AppCompatActivity {
             }
         });
 
+        btn_send_image.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent intent = new Intent();
+                intent.setType("image/*");
+                intent.setAction(Intent.ACTION_GET_CONTENT);
+                startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE);
+                Uri filePath = null;
+                if(filePath != null) {
+
+                    progressDialog.setCancelable(false);
+                    progressDialog.show();
+
+                    Log.d("file.getName()","***    "+filePath);
+                    File file= new File(filePath.getPath());
+                    file.getName();
+
+
+                    /*    Compress Image file size below code     */
+
+
+                    Bitmap bmp = null;
+                    try {
+
+                        bmp = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
+
+                    } catch (IOException e) {
+
+                        Log.d("PrintIOExeception","*****     "+e.toString());
+                        e.printStackTrace();
+                    }
+
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    bmp.compress(Bitmap.CompressFormat.JPEG, 25, baos);
+                    byte[] data = baos.toByteArray();
+
+
+                    StorageReference storageRef = null;
+
+                    //uploading the image //
+                    com.google.firebase.storage.UploadTask uploadTask = storageRef.child(file.getName()).putBytes(data);
+
+
+                    uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            progressDialog.dismiss();
+
+                            Task<Uri> urlvalues =    taskSnapshot.getMetadata().getReference().getDownloadUrl();
+
+                            Log.d("displayimageurls","****    "+urlvalues);
+
+
+                            Toast.makeText(MessageActivity.this, "Upload successful", Toast.LENGTH_SHORT).show();
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            progressDialog.dismiss();
+
+                            Log.d("printimaguploadfaild","*****    "+e.toString());
+
+                            Toast.makeText(MessageActivity.this, "Upload Failed -> " + e, Toast.LENGTH_SHORT).show();
+                        }
+                    }).addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                            //calculating progress percentage
+                            double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
+
+                            //displaying percentage in progress dialog
+                            progressDialog.setMessage("Uploaded " + ((int) progress) + "%...");
+                        }
+                    });
+                }
+                else {
+                    Toast.makeText(MessageActivity.this, "Select an image", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
+
     }
 
-  /*  private void seenMessage(String userid) {
+   /* protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data, String userid, String sender
+    , String receiver) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == PICK_IMAGE && resultCode==RESULT_OK && data!=null && data.getData()!=null)
+        {
+            loadingBar.setTitle("Sending Image");
+            loadingBar.setMessage("Please wait");
+            loadingBar.setCanceledOnTouchOutside(false);
+            loadingBar.show();
+
+
+            imageUri = data.getData();
+
+            if(checker.equals("image"))
+            {
+                StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("Image Files");
+
+                DatabaseReference chatRef = FirebaseDatabase.getInstance().getReference("Chatlist")
+                        .child(fuser.getUid())
+                        .child(userid);
+
+                chatRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot datasnapshot) {
+                        if(!datasnapshot.exists()) {
+                            chatRef.child("id").setValue(userid);
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+
+                StorageReference filePath = storageReference.child(userid + "." + "jpg");
+
+                uploadTask = filePath.putFile(imageUri);
+                uploadTask.continueWithTask(new Continuation() {
+                    @Override
+                    public Object then(@NonNull Task task) throws Exception {
+                        if(!task.isSuccessful()) {
+                            throw  task.getException();
+                        }
+
+                        return filePath.getDownloadUrl();
+                    }
+                }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Uri> task) {
+                        if(task.isSuccessful())
+                        {
+                            Uri downloadUrl = task.getResult();
+                            myUrl = downloadUrl.toString();
+                            loadingBar.dismiss();
+
+                            DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+                            HashMap<String, Object> hashMap = new HashMap<>();
+                            hashMap.put("sender", sender);
+                            hashMap.put("receiver", receiver);
+                            hashMap.put("message", myUrl);
+                            hashMap.put("type", checker);
+                            hashMap.put("date", saveCurrentDate);
+                            hashMap.put("time", saveCurrentTime);
+                            //hashMap.put("privateKey",mPass);
+                            reference.child("Chats").push().setValue(hashMap);
+
+                            DatabaseReference chatRef = FirebaseDatabase.getInstance().getReference("Chatlist")
+                                    .child(fuser.getUid())
+                                    .child(userid);
+
+                            chatRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot datasnapshot) {
+                                    if(!datasnapshot.exists()) {
+                                        chatRef.child("id").setValue(userid);
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+
+                                }
+                            });
+                        }
+
+                    }
+                });
+            }
+        }
+    }*/
+
+    /*  private void seenMessage(String userid) {
         reference = FirebaseDatabase.getInstance().getReference("Chats");
         seenListener = reference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -168,11 +385,15 @@ public class MessageActivity extends AppCompatActivity {
     }*/
 
     private void sendMessage(String sender, String receiver, String message, String userid) {
+
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("sender", sender);
         hashMap.put("receiver", receiver);
         hashMap.put("message", message);
+        hashMap.put("type", "text");
+        hashMap.put("date", saveCurrentDate);
+        hashMap.put("time", saveCurrentTime);
         //hashMap.put("privateKey",mPass);
         reference.child("Chats").push().setValue(hashMap);
 

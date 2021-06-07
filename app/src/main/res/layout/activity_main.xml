@@ -19,7 +19,7 @@
             app:popupTheme="@style/MenuStyle">
 
 
-            <de.hdodenhof.circleimageview.CircleImageView
+            <ImageView
                 android:id="@+id/profile_image"
                 android:layout_width="30dp"
                 android:layout_height="30dp" />
