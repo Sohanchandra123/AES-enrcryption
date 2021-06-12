@@ -69,6 +69,7 @@ import javax.crypto.spec.SecretKeySpec;
 public class MessageActivity extends AppCompatActivity {
 
     public static final int PICK_IMAGE = 1;
+    public static String userid = null;
 
     //CircleImageView profile_image;
     TextView username;
@@ -97,6 +98,8 @@ public class MessageActivity extends AppCompatActivity {
     Intent intent;
 
     ValueEventListener seenListener;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,7 +140,7 @@ public class MessageActivity extends AppCompatActivity {
         saveCurrentTime = currentTime.format(calendar.getTime());
 
         intent = getIntent();
-        final String userid = intent.getStringExtra("userid");
+        userid = intent.getStringExtra("userid");
         fuser = FirebaseAuth.getInstance().getCurrentUser();
 
 
@@ -271,16 +274,16 @@ public class MessageActivity extends AppCompatActivity {
         });
     }
 
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data, String userid, String sender
-    , String receiver) {
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if(requestCode == PICK_IMAGE && resultCode==RESULT_OK && data!=null && data.getData()!=null)
         {
-            loadingBar.setTitle("Sending Image");
+            /*loadingBar.setTitle("Sending Image");
             loadingBar.setMessage("Please wait");
             loadingBar.setCanceledOnTouchOutside(false);
-            loadingBar.show();
+            loadingBar.show();*/
 
 
             imageUri = data.getData();
@@ -330,8 +333,8 @@ public class MessageActivity extends AppCompatActivity {
 
                             DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
                             HashMap<String, Object> hashMap = new HashMap<>();
-                            hashMap.put("sender", sender);
-                            hashMap.put("receiver", receiver);
+                            //hashMap.put("sender", sender);
+                            //hashMap.put("receiver", receiver);
                             hashMap.put("message", myUrl);
                             hashMap.put("type", checker);
                             hashMap.put("date", saveCurrentDate);
