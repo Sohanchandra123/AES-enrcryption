@@ -267,6 +267,8 @@ public class MessageActivity extends AppCompatActivity {
             }
         });*/
 
+            }
+        });
     }
 
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data, String userid, String sender
