@@ -78,7 +78,7 @@ public class MessageActivity extends AppCompatActivity {
     String checker = "",myUrl;
     Uri imageUri;
     StorageTask uploadTask;
-    ProgressDialog progressDialog;
+    ProgressDialog loadingBar;
 
     FirebaseUser fuser;
     DatabaseReference reference;
@@ -192,7 +192,7 @@ public class MessageActivity extends AppCompatActivity {
                 intent.setType("image/*");
                 intent.setAction(Intent.ACTION_GET_CONTENT);
                 startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE);
-                Uri filePath = null;
+              /*  Uri filePath = null;
                 if(filePath != null) {
 
                     progressDialog.setCancelable(false);
@@ -203,7 +203,7 @@ public class MessageActivity extends AppCompatActivity {
                     file.getName();
 
 
-                    /*    Compress Image file size below code     */
+                    //   Compress Image file size below code
 
 
                     Bitmap bmp = null;
@@ -265,11 +265,11 @@ public class MessageActivity extends AppCompatActivity {
                 }
 
             }
-        });
+        });*/
 
     }
 
-   /* protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data, String userid, String sender
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data, String userid, String sender
     , String receiver) {
         super.onActivityResult(requestCode, resultCode, data);
 
@@ -285,7 +285,7 @@ public class MessageActivity extends AppCompatActivity {
 
             if(checker.equals("image"))
             {
-                StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("Image Files");
+                StorageReference storageReference = FirebaseStorage.getInstance().getReference().child("ImageFiles");
 
                 DatabaseReference chatRef = FirebaseDatabase.getInstance().getReference("Chatlist")
                         .child(fuser.getUid())
@@ -360,7 +360,7 @@ public class MessageActivity extends AppCompatActivity {
                 });
             }
         }
-    }*/
+    }
 
     /*  private void seenMessage(String userid) {
         reference = FirebaseDatabase.getInstance().getReference("Chats");
