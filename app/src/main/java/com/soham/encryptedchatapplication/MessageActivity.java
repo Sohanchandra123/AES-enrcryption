@@ -98,6 +98,7 @@ public class MessageActivity extends AppCompatActivity {
 
     ValueEventListener seenListener;
     String userid;
+    String msg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -157,7 +158,7 @@ public class MessageActivity extends AppCompatActivity {
                     //  Glide.with(MessageActivity.this).load(user.getImageURL()).into(profile_image);
                 }
 
-                readMessages(fuser.getUid(), userid, user.getImageURL());
+                readMessages(fuser.getUid(), userid, user.getImageURL(), myUrl);
             }
 
             @Override
@@ -169,7 +170,7 @@ public class MessageActivity extends AppCompatActivity {
         btn_send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String msg = text_send.getText().toString();
+                msg = text_send.getText().toString();
                 /*try {
                     encryptedMsg = encrypt(msg, mPass);
                 } catch (Exception e) {
@@ -314,35 +315,8 @@ public class MessageActivity extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         Uri downloadUrl = task.getResult();
                         myUrl = downloadUrl.toString();
+                        sendMessageImage(fuser.getUid(), userid, myUrl, userid);
 
-                        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
-                        HashMap<String, Object> hashMap = new HashMap<>();
-//                            hashMap.put("sender", sender);
-//                            hashMap.put("receiver", receiver);
-                        hashMap.put("message", myUrl);
-                        hashMap.put("type", checker);
-                        hashMap.put("date", saveCurrentDate);
-                        hashMap.put("time", saveCurrentTime);
-                        //hashMap.put("privateKey",mPass);
-                        reference.child("Chats").push().setValue(hashMap);
-
-                        DatabaseReference chatRef = FirebaseDatabase.getInstance().getReference("Chatlist")
-                                .child(fuser.getUid())
-                                .child(userid);
-
-                        chatRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot datasnapshot) {
-                                if (!datasnapshot.exists()) {
-                                    chatRef.child("id").setValue(userid);
-                                }
-                            }
-
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError error) {
-
-                            }
-                        });
                     }
 
                 }
@@ -372,6 +346,38 @@ public class MessageActivity extends AppCompatActivity {
             }
         });
     }*/
+
+    private void sendMessageImage(String sender, String receiver, String message, String userid) {
+
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("sender", sender);
+        hashMap.put("receiver", receiver);
+        hashMap.put("message", message);
+        hashMap.put("type", "image");
+        hashMap.put("date", saveCurrentDate);
+        hashMap.put("time", saveCurrentTime);
+        //hashMap.put("privateKey",mPass);
+        reference.child("Chats").push().setValue(hashMap);
+
+        DatabaseReference chatRef = FirebaseDatabase.getInstance().getReference("Chatlist")
+                .child(fuser.getUid())
+                .child(userid);
+
+        chatRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot datasnapshot) {
+                if (!datasnapshot.exists()) {
+                    chatRef.child("id").setValue(userid);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
 
     private void sendMessage(String sender, String receiver, String message, String userid) {
 
@@ -405,7 +411,7 @@ public class MessageActivity extends AppCompatActivity {
         });
     }
 
-    private void readMessages(final String myid, final String userid, final String imageurl) {
+    private void readMessages(final String myid, final String userid, final String imageurl, String myUrl) {
         mChat = new ArrayList<>();
         reference = FirebaseDatabase.getInstance().getReference("Chats");
         reference.addValueEventListener(new ValueEventListener() {
@@ -421,7 +427,7 @@ public class MessageActivity extends AppCompatActivity {
                     }
                     //Toast.makeText(MessageActivity.this,"Wrong Secret Key",Toast.LENGTH_SHORT).show();
 
-                    messageAdapter = new MessageAdapter(MessageActivity.this, mChat, imageurl);
+                    messageAdapter = new MessageAdapter(MessageActivity.this, mChat, imageurl, myUrl);
                     recyclerView.setAdapter(messageAdapter);
                 }
             }
