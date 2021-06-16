@@ -314,6 +314,7 @@ public class MessageActivity extends AppCompatActivity {
                 public void onComplete(@NonNull Task<Uri> task) {
                     if (task.isSuccessful()) {
                         Uri downloadUrl = task.getResult();
+                        assert downloadUrl != null;
                         myUrl = downloadUrl.toString();
                         sendMessageImage(fuser.getUid(), userid, myUrl, userid);
 
@@ -411,7 +412,7 @@ public class MessageActivity extends AppCompatActivity {
         });
     }
 
-    private void readMessages(final String myid, final String userid, final String imageurl, String myUrl) {
+    private void readMessages(final String myid, final String userid, final String imageurl, final String myUrl) {
         mChat = new ArrayList<>();
         reference = FirebaseDatabase.getInstance().getReference("Chats");
         reference.addValueEventListener(new ValueEventListener() {

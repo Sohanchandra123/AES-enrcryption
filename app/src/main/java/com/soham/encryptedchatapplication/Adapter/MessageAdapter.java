@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,7 +41,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     private Context mContext;
     private List<Chat> mChat;
     private String imageurl;
-    private String myurl;
+    public String myurl;
     //private String mPass;
     String AES = "AES";
     String encryptedMsg;
@@ -87,14 +88,24 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
                 holder.show_message.setVisibility(View.GONE);
                 holder.messageSenderPicture.setVisibility(View.VISIBLE);
                 //Picasso.get().load(myurl).into(holder.messageSenderPicture);
-                Glide.with(mContext).load(myurl).into(holder.messageSenderPicture);
+                try {
+                    Glide.with(mContext).load(chat.getMessage())
+                            .error(R.drawable.background_right)
+                            .into(holder.messageSenderPicture);
+                } catch(Exception e) {
+                    Log.e("Error", myurl);
+                }
             }
             else {
                 holder.show_message.setVisibility(View.GONE);
                 holder.messageReceiverPicture.setVisibility(View.VISIBLE);
-                Glide.with(mContext).load(myurl).into(holder.messageReceiverPicture);
+                Glide.with(mContext).load(chat.getMessage())
+                        .error(R.drawable.background_right)
+                        .into(holder.messageReceiverPicture);
+             //   Log.e("Error",myurl);
             }
         }
+        //Log.e("Error",myurl);
         if (imageurl.equals("default")) {
             holder.profile_image.setImageResource(R.mipmap.ic_launcher);
         } else {
