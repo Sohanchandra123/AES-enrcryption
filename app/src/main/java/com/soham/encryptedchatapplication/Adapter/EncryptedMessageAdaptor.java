@@ -1,6 +1,7 @@
 package com.soham.encryptedchatapplication.Adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-//import com.bumptech.glide.Glide;
+import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.soham.encryptedchatapplication.Model.Chat;
@@ -26,16 +27,18 @@ public class EncryptedMessageAdaptor extends RecyclerView.Adapter<EncryptedMessa
     private List<Chat> mChat;
     private String imageurl;
     private String mPass;
+    public String myurl;
     String AES="AES";
     String encryptedMsg;
 
     FirebaseUser fuser;
 
-    public EncryptedMessageAdaptor(Context mContext, List<Chat> mChat, String imageurl, String mPass) {
+    public EncryptedMessageAdaptor(Context mContext, List<Chat> mChat, String imageurl, String mPass, String myurl) {
         this.mContext = mContext;
         this.mChat = mChat;
         this.imageurl = imageurl;
         this.mPass = mPass;
+        this.myurl = myurl;
     }
 
     @NonNull
@@ -53,11 +56,40 @@ public class EncryptedMessageAdaptor extends RecyclerView.Adapter<EncryptedMessa
     @Override
     public void onBindViewHolder(@NonNull EncryptedMessageAdaptor.ViewHolder holder, int position) {
         Chat chat = mChat.get(position);
-        holder.show_message.setText(chat.getEncryptedMsg());
+        //holder.show_message.setText(chat.getEncryptedMsg());
+        String fromMessageType = chat.getType();
+
+        if (fromMessageType.equals("text")) {
+
+            holder.show_message.setText(chat.getEncryptedMsg());
+        }
+        else if(fromMessageType.equals("image")){
+
+            if(mChat.get(position).getSender().equals(fuser.getUid())) {
+                holder.show_message.setVisibility(View.GONE);
+                holder.messageSenderPicture.setVisibility(View.VISIBLE);
+                //Picasso.get().load(myurl).into(holder.messageSenderPicture);
+                try {
+                    Glide.with(mContext).load(chat.getEncryptedMsg())
+                            .error(R.drawable.background_right)
+                            .into(holder.messageSenderPicture);
+                } catch(Exception e) {
+                    Log.e("Error", myurl);
+                }
+            }
+            else {
+                holder.show_message.setVisibility(View.GONE);
+                holder.messageReceiverPicture.setVisibility(View.VISIBLE);
+                Glide.with(mContext).load(chat.getMessage())
+                        .error(R.drawable.background_right)
+                        .into(holder.messageReceiverPicture);
+                //   Log.e("Error",myurl);
+            }
+        }
         if (imageurl.equals("default")) {
             holder.profile_image.setImageResource(R.mipmap.ic_launcher);
         } else {
-           // Glide.with(mContext).load(imageurl).into(holder.profile_image);
+            Glide.with(mContext).load(imageurl).into(holder.profile_image);
         }
     }
 
@@ -71,12 +103,15 @@ public class EncryptedMessageAdaptor extends RecyclerView.Adapter<EncryptedMessa
 
         public TextView show_message;
         public ImageView profile_image;
+        public ImageView messageSenderPicture, messageReceiverPicture;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             show_message = itemView.findViewById(R.id.show_message);
             profile_image = itemView.findViewById(R.id.profile_image);
+            messageSenderPicture = itemView.findViewById(R.id.message_sender_image);
+            messageReceiverPicture = itemView.findViewById(R.id.message_receiver_image);
         }
     }
 
