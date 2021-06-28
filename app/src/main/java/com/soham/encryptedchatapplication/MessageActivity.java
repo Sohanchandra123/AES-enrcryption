@@ -72,7 +72,7 @@ public class MessageActivity extends AppCompatActivity {
 
     //CircleImageView profile_image;
     TextView username;
-    //public static String mPass;
+    public static String mPass;
     String AES = "AES";
     String encryptedMsg;
     String checker = "", myUrl;
@@ -151,7 +151,7 @@ public class MessageActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 User user = snapshot.getValue(User.class);
                 username.setText(user.getUsername());
-                //mPass = snapshot.child("secretkey").getValue().toString();
+                mPass = snapshot.child("secretkey").getValue().toString();
                 if (user.getImageURL().equals("default")) {
                     //  profile_image.setImageResource(R.mipmap.ic_launcher);
                 } else {
@@ -171,13 +171,13 @@ public class MessageActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 msg = text_send.getText().toString();
-                /*try {
+                try {
                     encryptedMsg = encrypt(msg, mPass);
                 } catch (Exception e) {
                     e.printStackTrace();
-                }*/
+                }
                 if (!msg.equals((""))) {
-                    sendMessage(fuser.getUid(), userid, msg, userid);
+                    sendMessage(fuser.getUid(), userid, msg, encryptedMsg);
                 } else {
                     Toast.makeText(MessageActivity.this, "You can't send empty message", Toast.LENGTH_SHORT).show();
                 }
@@ -380,13 +380,14 @@ public class MessageActivity extends AppCompatActivity {
         });
     }
 
-    private void sendMessage(String sender, String receiver, String message, String userid) {
+    private void sendMessage(String sender, String receiver, String message, String encryptedMsg) {
 
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("sender", sender);
         hashMap.put("receiver", receiver);
         hashMap.put("message", message);
+        hashMap.put("encryptedMsg", encryptedMsg);
         hashMap.put("type", "text");
         hashMap.put("date", saveCurrentDate);
         hashMap.put("time", saveCurrentTime);
@@ -475,7 +476,7 @@ public class MessageActivity extends AppCompatActivity {
         return false;
     }*/
 
- /*   private String encrypt(String Data, String inputPassword) throws Exception {
+    private String encrypt(String Data, String inputPassword) throws Exception {
         SecretKeySpec key = generateKey(inputPassword);
         Cipher cipher = Cipher.getInstance(AES);
         cipher.init(Cipher.ENCRYPT_MODE, key);
@@ -501,6 +502,6 @@ public class MessageActivity extends AppCompatActivity {
         byte[] key = digest.digest();
         SecretKeySpec secretKeySpec = new SecretKeySpec(key, "AES");
         return secretKeySpec;
-    }*/
+    }
 
 }

@@ -158,7 +158,7 @@ public class EncryptedMessageActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
                 if (!msg.equals((""))) {
-                    sendMessage(fuser.getUid(), userid, encryptedMsg, mPass, userid);
+                    sendMessage(fuser.getUid(), userid, encryptedMsg, msg, mPass, userid);
                 } else {
                     Toast.makeText(EncryptedMessageActivity.this, "You can't send empty message", Toast.LENGTH_SHORT).show();
                 }
@@ -276,11 +276,12 @@ public class EncryptedMessageActivity extends AppCompatActivity {
         });
     }
 
-    private void sendMessage(String sender, String receiver, String encryptedMsg, String mPass, String userid) {
+    private void sendMessage(String sender, String receiver, String encryptedMsg, String message, String mPass, String userid) {
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("sender", sender);
         hashMap.put("receiver", receiver);
+        hashMap.put("message", message);
         hashMap.put("encryptedMsg", encryptedMsg);
         hashMap.put("type", "text");
         hashMap.put("date", saveCurrentDate);
