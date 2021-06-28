@@ -282,6 +282,9 @@ public class EncryptedMessageActivity extends AppCompatActivity {
         hashMap.put("sender", sender);
         hashMap.put("receiver", receiver);
         hashMap.put("encryptedMsg", encryptedMsg);
+        hashMap.put("type", "text");
+        hashMap.put("date", saveCurrentDate);
+        hashMap.put("time", saveCurrentTime);
         hashMap.put("privateKey",mPass);
 
         reference.child("Chats").push().setValue(hashMap);
