@@ -348,13 +348,13 @@ public class MessageActivity extends AppCompatActivity {
         });
     }*/
 
-    private void sendMessageImage(String sender, String receiver, String message, String userid) {
+    private void sendMessageImage(String sender, String receiver, String image, String userid) {
 
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("sender", sender);
         hashMap.put("receiver", receiver);
-        hashMap.put("message", message);
+        hashMap.put("image", image);
         hashMap.put("type", "image");
         hashMap.put("date", saveCurrentDate);
         hashMap.put("time", saveCurrentTime);

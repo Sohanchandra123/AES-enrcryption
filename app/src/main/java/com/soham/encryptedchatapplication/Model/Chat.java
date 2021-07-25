@@ -6,17 +6,21 @@ public class Chat {
     private String receiver;
     private String message;
     private String encryptedMsg;
+    private String image;
+    private String encryptedImage;
     private String mPass;
     private String type;
     private String time;
     private String date;
 
-    public Chat(String sender, String receiver, String message, String encryptedMsg, String mPass, String type,
-                String time, String date) {
+    public Chat(String sender, String receiver, String message, String encryptedMsg, String image,
+                String encryptedImage, String mPass, String type, String time, String date) {
         this.sender = sender;
         this.receiver = receiver;
         this.message = message;
         this.encryptedMsg = encryptedMsg;
+        this.image = image;
+        this.encryptedImage = encryptedImage;
         this.mPass = mPass;
         this.type = type;
         this.time = time;
@@ -57,6 +61,14 @@ public class Chat {
     public String getEncryptedMsg() { return encryptedMsg;}
 
     public void setEncryptedMsg(String encryptedMsg) { this.encryptedMsg=encryptedMsg;}
+
+    public String getImage() { return image; }
+
+    public void setImage(String image) { this.image = image; }
+
+    public String getEncryptedImage() { return encryptedImage;}
+
+    public void setEncryptedImage(String encryptedImage) { this.encryptedImage=encryptedImage;}
 
     public String getmPass() { return mPass;}
 

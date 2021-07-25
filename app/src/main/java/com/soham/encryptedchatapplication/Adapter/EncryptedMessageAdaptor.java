@@ -27,18 +27,18 @@ public class EncryptedMessageAdaptor extends RecyclerView.Adapter<EncryptedMessa
     private List<Chat> mChat;
     private String imageurl;
     private String mPass;
-    public String myurl;
+    public String encryptedImage;
     String AES="AES";
     String encryptedMsg;
 
     FirebaseUser fuser;
 
-    public EncryptedMessageAdaptor(Context mContext, List<Chat> mChat, String imageurl, String mPass, String myurl) {
+    public EncryptedMessageAdaptor(Context mContext, List<Chat> mChat, String imageurl, String mPass, String encryptedImage) {
         this.mContext = mContext;
         this.mChat = mChat;
         this.imageurl = imageurl;
         this.mPass = mPass;
-        this.myurl = myurl;
+        this.encryptedImage = encryptedImage;
     }
 
     @NonNull
@@ -70,20 +70,20 @@ public class EncryptedMessageAdaptor extends RecyclerView.Adapter<EncryptedMessa
                 holder.messageSenderPicture.setVisibility(View.VISIBLE);
                 //Picasso.get().load(myurl).into(holder.messageSenderPicture);
                 try {
-                    Glide.with(mContext).load(chat.getEncryptedMsg())
+                    Glide.with(mContext).load(chat.getEncryptedImage())
                             .error(R.drawable.background_right)
                             .into(holder.messageSenderPicture);
                 } catch(Exception e) {
-                    Log.e("Error", myurl);
+                    Log.e("Error", encryptedImage);
                 }
             }
             else {
                 holder.show_message.setVisibility(View.GONE);
                 holder.messageReceiverPicture.setVisibility(View.VISIBLE);
-                Glide.with(mContext).load(chat.getMessage())
+                Glide.with(mContext).load(chat.getEncryptedImage())
                         .error(R.drawable.background_right)
                         .into(holder.messageReceiverPicture);
-                //   Log.e("Error",myurl);
+                //   Log.e("Error",encryptedImage);
             }
         }
         if (imageurl.equals("default")) {

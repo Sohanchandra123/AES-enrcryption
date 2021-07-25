@@ -89,7 +89,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
                 holder.messageSenderPicture.setVisibility(View.VISIBLE);
                 //Picasso.get().load(myurl).into(holder.messageSenderPicture);
                 try {
-                    Glide.with(mContext).load(chat.getMessage())
+                    Glide.with(mContext).load(chat.getImage())
                             .error(R.drawable.background_right)
                             .into(holder.messageSenderPicture);
                 } catch(Exception e) {
@@ -99,7 +99,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             else {
                 holder.show_message.setVisibility(View.GONE);
                 holder.messageReceiverPicture.setVisibility(View.VISIBLE);
-                Glide.with(mContext).load(chat.getMessage())
+                Glide.with(mContext).load(chat.getImage())
                         .error(R.drawable.background_right)
                         .into(holder.messageReceiverPicture);
              //   Log.e("Error",myurl);

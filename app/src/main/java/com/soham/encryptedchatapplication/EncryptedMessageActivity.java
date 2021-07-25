@@ -61,7 +61,7 @@ public class EncryptedMessageActivity extends AppCompatActivity {
     TextView username;
     public static String mPass;
     String AES="AES";
-    String encryptedMsg;
+    String encryptedMsg,encryptedImage;
     String checker = "", myUrl;
     Uri imageUri;
     StorageTask uploadTask;
@@ -139,7 +139,7 @@ public class EncryptedMessageActivity extends AppCompatActivity {
                     //Glide.with(EncryptedMessageActivity.this).load(user.getImageURL()).into(profile_image);
                 }
 
-                readMessages(fuser.getUid(), userid, user.getImageURL(), mPass, myUrl);
+                readMessages(fuser.getUid(), userid, user.getImageURL(), mPass, encryptedImage);
             }
 
             @Override
@@ -226,12 +226,12 @@ public class EncryptedMessageActivity extends AppCompatActivity {
                         assert downloadUrl != null;
                         myUrl = downloadUrl.toString();
                         try {
-                            encryptedMsg = encrypt(myUrl, mPass);
+                            encryptedImage = encrypt(myUrl, mPass);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
                         if (!myUrl.equals((""))) {
-                            sendMessageImage(fuser.getUid(), userid, myUrl, userid);
+                            sendMessageImage(fuser.getUid(), userid, myUrl, encryptedImage, userid);
                         } else {
                             Toast.makeText(EncryptedMessageActivity.this, "You can't send empty message", Toast.LENGTH_SHORT).show();
                         }
@@ -244,13 +244,14 @@ public class EncryptedMessageActivity extends AppCompatActivity {
         }
     }
 
-    private void sendMessageImage(String sender, String receiver, String encryptedImage, String userid) {
+    private void sendMessageImage(String sender, String receiver, String image, String encryptedImage, String userid) {
 
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("sender", sender);
         hashMap.put("receiver", receiver);
         hashMap.put("encryptedImage", encryptedImage);
+        hashMap.put("Image", image);
         hashMap.put("type", "image");
         hashMap.put("date", saveCurrentDate);
         hashMap.put("time", saveCurrentTime);
@@ -309,7 +310,7 @@ public class EncryptedMessageActivity extends AppCompatActivity {
         });
     }
     //&& (chat.getReceiver().equals(mPass)&&chat.getSender().equals(mPass))
-    private void readMessages(String myid, String userid, String imageurl, String mPass, final String myUrl) {
+    private void readMessages(String myid, String userid, String imageurl, String mPass, final String encryptedImage) {
         mChat = new ArrayList<>();
         reference = FirebaseDatabase.getInstance().getReference("Chats");
         reference.addValueEventListener(new ValueEventListener() {
@@ -323,7 +324,7 @@ public class EncryptedMessageActivity extends AppCompatActivity {
                     ) {
                         mChat.add(chat);
                     }
-                    encryptedMessageAdaptor = new EncryptedMessageAdaptor(EncryptedMessageActivity.this, mChat, imageurl, mPass, myUrl);
+                    encryptedMessageAdaptor = new EncryptedMessageAdaptor(EncryptedMessageActivity.this, mChat, imageurl, mPass, encryptedImage);
                     recyclerView.setAdapter(encryptedMessageAdaptor);
                 }
             }
